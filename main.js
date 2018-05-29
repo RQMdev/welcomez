@@ -5,7 +5,8 @@ let config = {
     physics: {
         default: 'arcade',
         arcade: {
-            gravity: { y: 200 }
+            gravity: { y: 200 },
+            debug: true,
         }
     },
     scene: {
@@ -16,6 +17,12 @@ let config = {
 };
 
 let game = new Phaser.Game(config);
+let map;
+let mapWidth;
+let mapHeight;
+let tileset;
+let walls;
+let tileSize = 16;
 let player;
 let platforms;
 let cursors;
@@ -24,12 +31,13 @@ let isPunching;
 let timedEvent;
 
 
-function preload() {
-    // this.load.setBaseURL('http://labs.phaser.io');
-    
+function preload() { 
     this.load.image('sky', 'assets/space.png')
     this.load.image('ground', 'assets/platform.png')
-
+    
+    this.load.tilemapTiledJSON('map', 'assets/map2.json')
+    this.load.image('tilesheet', 'assets/tilesheet.png')
+    
     this.load.image('duckFlying0', 'assets/flying/frame-1.png')
     this.load.image('duckFlying1', 'assets/flying/frame-2.png')
     this.load.image('duckFlying2', 'assets/flying/frame-3.png')
@@ -44,60 +52,33 @@ function preload() {
 
     this.load.image('duckFaint', 'assets/faint/frame.png')
 
+    
     this.load.spritesheet('duck', 'assets/duck.png', { frameWidth: 252, frameHeight: 288 })
     this.load.spritesheet('player', 'assets/player/player-spritemap-v9.png', { frameWidth: 46, frameHeight: 50})
 }
 
 function create() {
-
+    
     this.add.image(0, 0, 'sky').setOrigin(0, 0);
     
-    platforms = this.physics.add.staticGroup();
+    map = this.add.tilemap('map')
+    mapWidth = map.width
+    mapHeight = map.height
+    // map = this.make.tilemap({ key: 'map', tileWidth: 16, tileHeight: 16 })
+    tileset = map.addTilesetImage('tilesheet')
+    walls = map.createStaticLayer(0, tileset, 0, 0)
     
-    platforms.create(400, 568, 'ground').setScale(2).refreshBody();
+    walls.setCollisionByExclusion([ -1 ])
+    
+    this.physics.world.setBounds(0,0, map.width, map.height)
+    this.cameras.main.setBounds(0, 0, map.width, map.height)
+    // platforms = this.physics.add.staticGroup();
+    
+    // platforms.create(400, 568, 'ground').setScale(2).refreshBody();
 
-    platforms.create(600, 400, 'ground');
-    platforms.create(50, 250, 'ground');
-    platforms.create(750, 220, 'ground');
-    
-    player = this.physics.add.sprite(400, 100, 'player');
-    
-    player.setCollideWorldBounds(true);
-    
-    // TODO: Fix Animations 
-    this.anims.create({
-        key: 'stand',
-        frames: [ { key: 'player', frame: 0 } ],
-        frameRate: 20
-    });
-    
-    this.anims.create({
-        key: 'run',
-        frames: this.anims.generateFrameNumbers('player', { start: 24, end: 31 }),
-        frameRate: 10,
-        repeat: -1
-    });
-
-    this.anims.create({
-        key: 'groundPunch',
-        frames: this.anims.generateFrameNumbers('player', { start: 2, end: 5 }),
-        frameRate: 10,
-        repeat: 0
-    });
-    
-    this.anims.create({
-        key: 'jumpPunch',
-        frames: this.anims.generateFrameNumbers('player', { start: 10, end: 13 }),
-        frameRate: 10,
-        repeat: 0
-    });
-    
-    this.anims.create({
-        key: 'jump',
-        frames: this.anims.generateFrameNumbers('player', { start: 6, end: 7 }),
-        frameRate: 5,
-        repeat: -1
-    });
+    // platforms.create(600, 400, 'ground');
+    // platforms.create(50, 250, 'ground');
+    // platforms.create(750, 220, 'ground');
 
     enemy = this.physics.add.group({
         key: 'duckFlying0',
@@ -145,20 +126,59 @@ function create() {
         repeat: -1,
     });
 
-    console.log(timedEvent)
-    
     function flyingUp() {
         enemy.setVelocityY(-100)
     }
+    
+    player = this.physics.add.sprite(400, 100, 'player');
+    
+    player.setCollideWorldBounds(true);
+    
+    // TODO: Fix Animations 
+    this.anims.create({
+        key: 'stand',
+        frames: [ { key: 'player', frame: 0 } ],
+        frameRate: 20
+    });
+    
+    this.anims.create({
+        key: 'run',
+        frames: this.anims.generateFrameNumbers('player', { start: 24, end: 31 }),
+        frameRate: 10,
+        repeat: -1
+    });
 
+    this.anims.create({
+        key: 'groundPunch',
+        frames: this.anims.generateFrameNumbers('player', { start: 2, end: 5 }),
+        frameRate: 10,
+        repeat: 0
+    });
+    
+    this.anims.create({
+        key: 'jumpPunch',
+        frames: this.anims.generateFrameNumbers('player', { start: 10, end: 13 }),
+        frameRate: 10,
+        repeat: 0
+    });
+    
+    this.anims.create({
+        key: 'jump',
+        frames: this.anims.generateFrameNumbers('player', { start: 6, end: 7 }),
+        frameRate: 5,
+        repeat: -1
+    });
+
+    this.physics.add.collider(player, walls);
+    this.physics.add.collider(enemy, walls);
     this.physics.add.collider(player, platforms);
     this.physics.add.collider(enemy, platforms);
     this.physics.add.overlap(player, enemy, killEnemy, null, this);
     cursors = this.input.keyboard.createCursorKeys();
     spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     
-    this.cameras.main.setBounds(0, 0, 1024, 768)
-    this.cameras.main.startFollow(player)
+
+    this.cameras.main.startFollow(player, true, 0.5, 0.5)
 }
 
 
@@ -172,7 +192,12 @@ function killEnemy(player, enemy) {
 }
 
 function update() {
-    if (player.body.touching.down){
+    if(spaceKey.isDown) {
+        console.log()
+    }
+
+
+    if (player.body.blocked.down){
         if (!isPunching){
             if (spaceKey.isDown) {
                 player.setVelocityX(0)
