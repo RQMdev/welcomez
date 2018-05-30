@@ -1,5 +1,8 @@
+// This is a bad code that need to be refactored.
+// feel free to PR if you wanna help  ;)
+
 // TODO : Refactor everything!!
-let windowWidth = 1400;
+let windowWidth = 1440;
 let windowHeight = 700;
 
 let config = {
@@ -23,6 +26,8 @@ let config = {
 
 let game = new Phaser.Game(config);
 
+let playback;
+let duckSound;
 let textDuck;
 let bg;
 let scene;
@@ -46,16 +51,17 @@ let collideProtection = false;
 
 data = [
     "",
-    "Chase ball of string Gate keepers of hell. Hack up furballs russian blue when owners are asleep,",
-    "cry for no apparent reason yet chew foot. Then cats take over the world.",
-    "Annoy kitten brother with poking sleep eat half my food and ask for more for weigh eight pounds",
+    "Il s'appelle Benoit Laurent, mais sur le net vous le verrez sous l'énigmatique pseudo de RQM-, allez savoir !",
+    "Il a fait Arts Appliquées au lycée, puis s'est essayé à la faculté quelques années entre Art du Spectacle et Musicologie",
+    "Il s'est e",
     "but take up a full-size bed or that box? i can fit in that box. Floof tum, tickle bum," 
 ]
 
-function preload() { 
+function preload() {
+    this.load.audio('playback', 'assets/battle.mp3')
+    this.load.audio('duckSound', 'assets/duck.wav')
+
     this.load.image('bg', 'assets/background.png')
-    this.load.image('sky', 'assets/space.png')
-    this.load.image('ground', 'assets/platform.png')
     
     this.load.tilemapTiledJSON('map', 'assets/map2.json')
     this.load.image('tilesheet', 'assets/tilesheet.png')
@@ -74,29 +80,31 @@ function preload() {
 
     this.load.image('duckFaint', 'assets/faint/frame.png')
 
-    this.load.spritesheet('duck', 'assets/duck.png', { frameWidth: 252, frameHeight: 288 })
+    // this.load.spritesheet('duck', 'assets/duck.png', { frameWidth: 252, frameHeight: 288 })
     this.load.spritesheet('player', 'assets/player/player-spritemap-v9.png', { frameWidth: 46, frameHeight: 50})
 }
 
 function create() {
     scene = this;
 
+    playback = this.sound.add('playback', { volume: 0.05, loop: true })
+    playback.play()
     
+    duckSound = this.sound.add('duckSound', {volume: 0.05})
+
     map = this.add.tilemap('map')
     mapWidth = map.width * tileSize
-    mapHeight = map.height * tileSize
-    mapHalfWidth = mapWidth / 2;
-    mapHalfHeight = mapHeight / 2;
-    // map = this.make.tilemap({ key: 'map', tileWidth: 16, tileHeight: 16 })
-    
+    mapHeight = map.height * tileSize   
     
     bg = this.add.image(windowWidth/2, windowHeight/2, 'bg')
     bg.setScrollFactor(0.1)
-    // bg.setScale(0.75, 0.7)
-
     
     tileset = map.addTilesetImage('tilesheet')
     walls = map.createStaticLayer(0, tileset, 0, 0)
+
+    // WIP Parallax background layer
+    // background = map.createStaticLayer(1, tileset, 0, 0)
+    // background.setScrollFactor(0.5)
     grounds = map.createStaticLayer(3, tileset, 0, 0)
     
     walls.setCollisionByExclusion([ -1 ])
@@ -104,13 +112,7 @@ function create() {
     
     this.physics.world.setBounds(0,0, mapWidth, mapHeight)
     this.cameras.main.setBounds(0, 0, mapWidth, mapHeight)
-    // platforms = this.physics.add.staticGroup();
     
-    // platforms.create(400, 568, 'ground').setScale(2).refreshBody();
-    
-    // platforms.create(600, 400, 'ground');
-    // platforms.create(50, 250, 'ground');
-    // platforms.create(750, 220, 'ground');
     textDuck = this.physics.add.sprite(32, 16, 'duckFlying0').setOrigin(0, 0);
     textDuck.setScrollFactor(0)
     textDuck.setScale(0.05, 0.05)
@@ -121,13 +123,13 @@ function create() {
     enemy = this.physics.add.group();
 
     map.objects[0].objects.forEach(function(object){
-        if(object.type == 'player'){
+        if (object.type == 'player') {
             player = scene.physics.add.sprite(object.x, object.y, 'player');
             player.setCollideWorldBounds(true);
             player.body.setGravity(0, 200)
             player.setScale(1.5)
 
-        } else if(object.type == 'enemy') {
+        } else if (object.type == 'enemy') {
             enemy.create(object.x, object.y, 'duckFlying0')
         }
     });
@@ -144,7 +146,7 @@ function create() {
            { key: 'duckFlying6', frame: null },
            { key: 'duckFlying7', frame: null },
         ],
-       frameRate: 15,
+       frameRate: 12,
        repeat: -1, 
     });
 
@@ -160,7 +162,7 @@ function create() {
             { key: 'duckFlying6', frame: null },
             { key: 'duckFlying7', frame: null },
          ],
-        frameRate: 15,
+        frameRate: 10,
         repeat: 4
      });
 
@@ -185,39 +187,16 @@ function create() {
             { key: 'duckHit1', frame: null },
             { key: 'duckFaint', frame: null },
         ],
-        framerate: 1,
+        frameRate: 12,
     });
     
-    flyingUp = function(duck) {
-        duck.setVelocityY(-100)
-    }
-
     enemy.children.iterate(function (child) {
-        // child.setBounceY(Phaser.Math.FloatBetween(0.1, 0.3));
         child.setScale(0.05, 0.05)
         child.play('flying', true)
         child.setVelocityX(50)
         child.body.setGravity(0, 0)
-        // child.flyingEvent = scene.time.addEvent({
-        //     delay: 1000,
-        //     callback: function toto(){
-        //         console.log(enemy)
-        //     },
-        //     callbackScope: scene,
-        //     repeat: -1,
-        // });
     });
-    
-    // console.log(this)
-    // timedEvent = this.time.addEvent({
-    //     delay: 1000,
-    //     callback: flyingUp,
-    //     callbackScope: this,
-    //     repeat: -1,
-    // });
-
-        
-    // TODO: Fix Animations 
+             
     this.anims.create({
         key: 'stand',
         frames: [ { key: 'player', frame: 0 } ],
@@ -248,37 +227,24 @@ function create() {
     this.anims.create({
         key: 'jump',
         frames: this.anims.generateFrameNumbers('player', { start: 6, end: 7 }),
-        frameRate: 5,
+        frameRate: 4,
         repeat: -1
     });
 
     this.physics.add.collider(player, walls);
     this.physics.add.collider(player, grounds);
     this.physics.add.collider(enemy, walls, function(enemy, walls){
-        console.log('collide!')
-        // if (collideProtection){
-        //     return
-        // }
-        // console.log(enemy.body)
-        // collideProtection = true;
-        // setTimeout(function(){
-        //     collideProtection = false
-        // }, 500);
-        // console.log(child.body.blocked.left || child.body.blocked.right)
-            // console.log(enemy.body.velocity)
-                // console.log(enemy.body.blocked.left)
-                if (enemy.body.blocked.left){
-                    enemy.setVelocityX(50);
-                } else if (enemy.body.blocked.right){
-                    enemy.setVelocityX(-50);
-                }
-                enemy.toggleFlipX()
+        enemy.toggleFlipX()
+        if (enemy.body.blocked.left){
+            enemy.setVelocityX(50);
+        } else if (enemy.body.blocked.right){
+            enemy.setVelocityX(-50);
+        }
     });
     this.physics.add.collider(enemy, grounds);
     this.physics.add.overlap(player, enemy, killEnemy, null, this);
     cursors = this.input.keyboard.createCursorKeys();
     spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-    dInput = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 
     this.cameras.main.startFollow(player, true, 0.5, 0.5)
 }
@@ -287,10 +253,8 @@ function killEnemy(player, duck) {
     if (player.anims.currentAnim.key == 'groundPunch' || player.anims.currentAnim.key == 'jumpPunch') {
         if (duck.anims.currentAnim.key == 'duckHit'){
         } else {
-            duck.play('duckHit', true)    
-            // enemy.disableBody(true, true);
-            console.log('normally reset velocityX')
-            // console.log(enemy.flyingEvent)
+            duck.play('duckHit', true)  
+            duckSound.play()  
             duck.setVelocityX(0)
             duck.body.setGravity(0, 200)
             displayedText.setText(data[++dataIndex])
@@ -300,22 +264,6 @@ function killEnemy(player, duck) {
 }
 
 function update() {
-    if(dInput.isDown) {
-        player.setVelocityY(-1000)
-    }
-
-    // enemy.children.iterate(function(child){
-    //     console.log(child.body.blocked.left || child.body.blocked.right)
-    //     if (child.body.blocked.left || child.body.blocked.right){
-    //         if (child.body.velocity.x > 0){
-    //             child.setVelocityX(-50)
-    //         } else {
-    //             child.setVelocityX(50)
-    //         }
-    //     }
-    // });
-
-
     if (player.body.blocked.down){
         if (!isPunching){
             if (spaceKey.isDown) {

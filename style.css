@@ -18,8 +18,9 @@ canvas {
 }
 
 .title {
+    margin-top: 10px;
     text-align: center;
     color: white;
-    text-transform: uppercase;
+    /* text-transform: uppercase; */
     font-family: 'Ubuntu';
 }
