@@ -1,10 +1,12 @@
 // TODO : Refactor everything!!
+let windowWidth = 1400;
+let windowHeight = 700;
 
 let config = {
     parent: 'gameWindow',
     type: Phaser.AUTO,
-    width: 1400,
-    height: 700,
+    width: windowWidth,
+    height: windowHeight,
     physics: {
         default: 'arcade',
         arcade: {
@@ -22,6 +24,7 @@ let config = {
 let game = new Phaser.Game(config);
 
 let textDuck;
+let bg;
 let scene;
 let map;
 let mapWidth;
@@ -50,6 +53,7 @@ data = [
 ]
 
 function preload() { 
+    this.load.image('bg', 'assets/background.png')
     this.load.image('sky', 'assets/space.png')
     this.load.image('ground', 'assets/platform.png')
     
@@ -77,15 +81,20 @@ function preload() {
 function create() {
     scene = this;
 
-    textDuck = this.physics.add.sprite(16, 16, 'duckFlying0').setOrigin(0, 0);
-    textDuck.setScrollFactor(0)
-    textDuck.setScale(0.05, 0.05)
-    this.add.image(0, 0, 'sky').setOrigin(0, 0);
     
     map = this.add.tilemap('map')
     mapWidth = map.width * tileSize
     mapHeight = map.height * tileSize
+    mapHalfWidth = mapWidth / 2;
+    mapHalfHeight = mapHeight / 2;
     // map = this.make.tilemap({ key: 'map', tileWidth: 16, tileHeight: 16 })
+    
+    
+    bg = this.add.image(windowWidth/2, windowHeight/2, 'bg')
+    bg.setScrollFactor(0.1)
+    // bg.setScale(0.75, 0.7)
+
+    
     tileset = map.addTilesetImage('tilesheet')
     walls = map.createStaticLayer(0, tileset, 0, 0)
     grounds = map.createStaticLayer(3, tileset, 0, 0)
@@ -102,8 +111,11 @@ function create() {
     // platforms.create(600, 400, 'ground');
     // platforms.create(50, 250, 'ground');
     // platforms.create(750, 220, 'ground');
+    textDuck = this.physics.add.sprite(32, 16, 'duckFlying0').setOrigin(0, 0);
+    textDuck.setScrollFactor(0)
+    textDuck.setScale(0.05, 0.05)
     
-    displayedText = this.add.text(96, 32, data[dataIndex], { font: "15px Arial", fill: "#19de65" })
+    displayedText = this.add.text(110, 34, data[dataIndex], { font: "18px Ubuntu", fill: "#000000" })
     displayedText.setScrollFactor(0, 0)
     
     enemy = this.physics.add.group();
@@ -149,6 +161,7 @@ function create() {
             { key: 'duckFlying7', frame: null },
          ],
         frameRate: 15,
+        repeat: 4
      });
 
     this.anims.create({
@@ -265,6 +278,7 @@ function create() {
     this.physics.add.overlap(player, enemy, killEnemy, null, this);
     cursors = this.input.keyboard.createCursorKeys();
     spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    dInput = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 
     this.cameras.main.startFollow(player, true, 0.5, 0.5)
 }
@@ -286,8 +300,8 @@ function killEnemy(player, duck) {
 }
 
 function update() {
-    if(spaceKey.isDown) {
-        // console.log()
+    if(dInput.isDown) {
+        player.setVelocityY(-1000)
     }
 
     // enemy.children.iterate(function(child){
@@ -312,11 +326,11 @@ function update() {
                     isPunching = false;
                 }, 500)
             } else if (cursors.right.isDown){
-                player.setVelocityX(160);
+                player.setVelocityX(200);
                 player.anims.play('run', true);
                 player.flipX = false;
             } else if (cursors.left.isDown){
-                player.setVelocityX(-160);
+                player.setVelocityX(-200);
                 player.anims.play('run', true);
                 player.flipX = true;
             } else {
@@ -336,11 +350,11 @@ function update() {
                 }, 500)
         } else if (cursors.right.isDown){
             player.anims.play('jump', true);
-            player.setVelocityX(160)
+            player.setVelocityX(200)
             player.flipX = false;
         } else if (cursors.left.isDown){
             player.anims.play('jump', true);
-            player.setVelocityX(-160)
+            player.setVelocityX(-200)
             player.flipX = true;
         } else if (!isPunching) {
             player.anims.play('jump', true);

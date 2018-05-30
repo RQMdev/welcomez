@@ -1,7 +1,7 @@
 body {
     margin: 0;
     padding: 0;
-    background-color:#2B2537;
+    background-color: #333;
 }
 
 .gameWindow {
@@ -14,10 +14,12 @@ body {
 canvas {
     display: block;
     margin: auto;
+    border: 2px solid black;
 }
 
 .title {
     text-align: center;
     color: white;
     text-transform: uppercase;
+    font-family: 'Ubuntu';
 }
