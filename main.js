@@ -51,10 +51,19 @@ let collideProtection = false;
 
 data = [
     "",
-    "Il s'appelle Benoit Laurent, mais sur le net vous le verrez sous l'énigmatique pseudo de RQM-, allez savoir !",
-    "Il a fait Arts Appliquées au lycée, puis s'est essayé à la faculté quelques années entre Art du Spectacle et Musicologie",
-    "Il s'est e",
-    "but take up a full-size bed or that box? i can fit in that box. Floof tum, tickle bum," 
+    "Il s'appelle Benoit Laurent, mais sur le net vous le verrez sous l'énigmatique pseudo de RQM-, allez savoir!",
+    "Il se serait formé au Design au lycée, en Arts Appliqués! à voir cette page, on se rend compte que ça remonte un peu!",
+    "En arrivant à Rennes il s'est beaucoup intéressé à la Musique, et s'est formé dans les techniques du Spectacle, son et lumière!",
+    "Le milieu du spectacle étant un peu \"particulier\" et ne lui convenant pas, il a cherché une solution de replis...",
+    "Comme il a passé beaucoup de temps dans son enfance à jouer à Counter-Strike, il s'est dit pourquoi pas l'informatique!",
+    "C'est là qu'il est tombé sur un article du Ouest-France sur la Code-Académie, une formation rapide en développement web",
+    "Il s'y est inscrit sans trop de conviction et s'est retrouvé embarqué dans une belle aventure!",
+    "C'était 8 mois de formation, sans cours théorique, où il favorisait l'entraide et la pédagogie par projet réel!",
+    "Enfin une formation où l'on se confronte au problème d'abord, et où on apprend à chercher par nous même! comme en vrai quoi...",
+    "C'est là qu'il s'est rendu compte que la programmation, c'était cool en fait, et que le Javascript était fait pour lui!",
+    "Du coup il a touché un peu à React, à React-Native, Meteor et Phaser et s'est même mis au back-end avec Node.js pendant cette formation!",
+    "Mais en vrai, si vous voulez vraiment apprendre à le connaitre, vous le trouverez dans un coin de l'open-space, caché sous sa capuche!",
+    "Ah oui, il revient tout juste de vacances en Thailande, où il a chopé la Dengue... donc ne vous inquiéter pas s'il a le regard vide et le teint livide ;)", 
 ]
 
 function preload() {

@@ -1,0 +1,12 @@
+Il parait qu'un nouveau stagiaire est arrivé dans les locaux de Zenika !
+Pour l'instant il est dans son coin de l'open-space, caché sous sa capuche, et ne parle à personne !
+Difficile d'en savoir plus sur lui donc...
+
+J'ai dit qu'il ne parlait à personne ?...
+J'ai menti, il s'est fait des amis à Zenika, des confidents mêmes, ils sont les seuls à en savoir plus sur lui !
+Vous l'aurez compris, si vous voulez en savoir plus, il va falloir allez soudoier des informations au Zenikanard !
+
+Pour cela rien de plus simple :
+https://github.io/RQMdev/welcomez
+
+GL & HF
