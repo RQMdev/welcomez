@@ -7,6 +7,6 @@ J'ai menti, il s'est fait des amis à Zenika, des confidents mêmes, ils sont le
 Vous l'aurez compris, si vous voulez en savoir plus, il va falloir allez soudoier des informations au Zenikanard !
 
 Pour cela rien de plus simple :
-https://github.io/RQMdev/welcomez
+https://rqmdev.github.io/welcomez/
 
 GL & HF
